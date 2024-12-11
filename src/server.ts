@@ -13,6 +13,7 @@ import Env from '@src/common/Env';
 import HttpStatusCodes from '@src/common/HttpStatusCodes';
 import { RouteError } from '@src/common/route-errors';
 import { NodeEnvs } from '@src/common/constants';
+import { check_token } from '@src/middleware/auth';
 
 
 // **** Variables **** //
@@ -25,6 +26,8 @@ const app = express();
 // Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+app.use(check_token);
 
 // Show routes called in console during development
 if (Env.NodeEnv === NodeEnvs.Dev.valueOf()) {
