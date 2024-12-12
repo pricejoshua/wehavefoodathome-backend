@@ -1,12 +1,8 @@
-import logger from 'jet-logger';
+import app from './app';
 
-import Env from '@src/common/Env';
-import server from './server';
-
-
-// **** Run **** //
-
-const SERVER_START_MSG = ('Express server started on port: ' + 
-  Env.Port.toString());
-
-server.listen(Env.Port, () => logger.info(SERVER_START_MSG));
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  /* eslint-disable no-console */
+  console.log(`Listening: http://localhost:${port}`);
+  /* eslint-enable no-console */
+});
