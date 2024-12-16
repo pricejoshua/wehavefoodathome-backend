@@ -20,6 +20,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@veryfi/veryfi-sdk": "^1.4.2",
     "axios": "^1.7.9",
     "barcode-validator": "^1.0.2",
     "cors": "^2.8.5",
@@ -51,6 +52,6 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }
