@@ -12,8 +12,8 @@ import aldi from "./responses/aldi.json";
 
 async function getRecieptData(imageUrl: string) {
   const reciept = aldi as unknown as Reciept;
-  console.log(reciept);
-  console.log(typeof reciept);
+  // console.log(reciept);
+  // console.log(typeof reciept);
   
   return reciept;
 }

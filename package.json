@@ -20,6 +20,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.47.8",
     "@veryfi/veryfi-sdk": "^1.4.2",
     "axios": "^1.7.9",
     "barcode-validator": "^1.0.2",
