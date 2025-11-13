@@ -75,7 +75,7 @@ router.get<{}, ProvidersResponse>('/providers', (req, res) => {
   } catch (error) {
     console.error('Error getting providers:', error);
     res.status(500).json({
-      success: true,
+      success: false,
       providers: [],
     });
   }
