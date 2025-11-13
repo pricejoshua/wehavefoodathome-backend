@@ -1,23 +1,42 @@
-// upload image first
-import axios from "axios";
-import veryfi from "../utils/veryfi"
-import { Reciept, toReciept } from "../types/Reciept";
-import aldi from "./responses/aldi.json";
- 
-// async function getRecieptData(imageUrl: string) {
-//   const response = await veryfi.process_document_from_url(imageUrl);
-//   console.log(response);
-//   return response;
-// }
+import { Reciept } from "../types/Reciept";
+import { ReceiptParsingService } from "../services/ReceiptParsingService";
+import { ReceiptParserProvider } from "../types/ReceiptParser";
 
-async function getRecieptData(imageUrl: string) {
-  const reciept = aldi as unknown as Reciept;
-  // console.log(reciept);
-  // console.log(typeof reciept);
-  
-  return reciept;
+/**
+ * Get receipt data by parsing an image URL
+ * @param imageUrl - URL of the receipt image
+ * @param mimeType - MIME type of the image (default: 'image/jpeg')
+ * @param provider - Optional: specify which parser to use (claude, groq, or veryfi)
+ * @returns Parsed receipt data
+ */
+async function getRecieptData(
+  imageUrl: string,
+  mimeType: string = 'image/jpeg',
+  provider?: ReceiptParserProvider
+): Promise<Reciept> {
+  try {
+    // Create parsing service (will auto-detect provider if not specified)
+    const parsingService = provider
+      ? ReceiptParsingService.withProvider(provider)
+      : new ReceiptParsingService();
+
+    console.log(`Using ${parsingService.getProviderName()} to parse receipt`);
+
+    // Parse the receipt
+    const receipt = await parsingService.parseReceipt(imageUrl, mimeType);
+
+    return receipt;
+  } catch (error) {
+    console.error('Error parsing receipt:', error);
+    throw error;
+  }
 }
 
-const url = "https://miro.medium.com/v2/resize:fit:640/format:webp/1*MLRlL9W69PMWAcTF-rV36Q.jpeg"
+/**
+ * Get list of available receipt parsing providers
+ */
+export function getAvailableProviders(): ReceiptParserProvider[] {
+  return ReceiptParsingService.getAvailableProviders();
+}
 
 export default getRecieptData;
