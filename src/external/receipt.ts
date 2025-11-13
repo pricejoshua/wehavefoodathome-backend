@@ -1,8 +1,8 @@
 // upload image first
-import axios from "axios";
-import veryfi from "../utils/veryfi"
-import { Receipt, toReceipt } from "../types/Receipt";
-import aldi from "./responses/aldi.json";
+import axios from 'axios';
+import veryfi from '../utils/veryfi';
+import { Receipt } from '../types/Receipt';
+import aldi from './responses/aldi.json';
 
 // async function getReceiptData(imageUrl: string) {
 //   const response = await veryfi.process_document_from_url(imageUrl);
@@ -18,6 +18,6 @@ async function getReceiptData(imageUrl: string) {
   return receipt;
 }
 
-const url = "https://miro.medium.com/v2/resize:fit:640/format:webp/1*MLRlL9W69PMWAcTF-rV36Q.jpeg"
+const url = 'https://miro.medium.com/v2/resize:fit:640/format:webp/1*MLRlL9W69PMWAcTF-rV36Q.jpeg';
 
 export default getReceiptData;

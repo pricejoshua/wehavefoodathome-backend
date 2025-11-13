@@ -1,11 +1,11 @@
 import express from 'express';
 import {
-    getProfile,
-    getProfileByUsername,
-    createProfile,
-    updateProfile,
-    deleteProfile,
-    searchProfiles
+  getProfile,
+  getProfileByUsername,
+  createProfile,
+  updateProfile,
+  deleteProfile,
+  searchProfiles,
 } from '../controllers/profile';
 import { check_token } from '../middleware/auth';
 

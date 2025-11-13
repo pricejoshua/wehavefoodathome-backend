@@ -1,14 +1,14 @@
-import type { Tables } from '../types/db.types'
+import type { Tables } from '../types/db.types';
 import express from 'express';
 import {
-    getProducts,
-    createProduct,
-    getProduct,
-    updateProduct,
-    deleteProduct,
-    searchByBarcode,
-    searchProducts,
-    lookupAndCreateFromBarcode
+  getProducts,
+  createProduct,
+  getProduct,
+  updateProduct,
+  deleteProduct,
+  searchByBarcode,
+  searchProducts,
+  lookupAndCreateFromBarcode,
 } from '../controllers/product';
 import { check_token } from '../middleware/auth';
 

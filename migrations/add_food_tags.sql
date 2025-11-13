@@ -3,15 +3,21 @@
 
 -- Create food_tags table (many-to-many relationship between food_item and profiles)
 CREATE TABLE IF NOT EXISTS food_tags (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     food_id UUID NOT NULL REFERENCES food_item(id) ON DELETE CASCADE,
     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    PRIMARY KEY (food_id, user_id)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Add comment for documentation
 COMMENT ON TABLE food_tags IS 'Tags food items as belonging to specific users. NULL user_id means "for everyone"';
 COMMENT ON COLUMN food_tags.user_id IS 'User this food belongs to. NULL = available for all';
+
+-- Create unique constraint for non-null user_id (prevents duplicate tags for specific users)
+CREATE UNIQUE INDEX idx_food_tags_food_user ON food_tags(food_id, user_id) WHERE user_id IS NOT NULL;
+
+-- Create unique constraint to allow only one "for everyone" tag per food item
+CREATE UNIQUE INDEX idx_food_tags_food_null_user ON food_tags(food_id) WHERE user_id IS NULL;
 
 -- Create index for efficient querying
 CREATE INDEX idx_food_tags_food_id ON food_tags(food_id);
