@@ -7,8 +7,12 @@ import {
     deleteFoodItem,
     searchFoodItems
 } from '../controllers/foodItem';
+import { check_token } from '../middleware/auth';
 
 const router = express.Router();
+
+// Apply authentication to all food-items routes
+router.use(check_token);
 
 // GET /api/v1/food-items?house_id=xxx - Get all food items for a house
 router.get('/', getFoodItems);

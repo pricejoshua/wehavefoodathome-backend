@@ -9,8 +9,12 @@ import {
     addUserToHouse,
     removeUserFromHouse
 } from '../controllers/house';
+import { check_token } from '../middleware/auth';
 
 const router = express.Router();
+
+// Apply authentication to all houses routes
+router.use(check_token);
 
 // GET /api/v1/houses?user_id=xxx - Get all houses for a user
 router.get('/', getUserHouses);
