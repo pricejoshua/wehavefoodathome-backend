@@ -7,7 +7,8 @@ import {
     updateProduct,
     deleteProduct,
     searchByBarcode,
-    searchProducts
+    searchProducts,
+    lookupAndCreateFromBarcode
 } from '../controllers/product';
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get<{}, Tables<'products'>[]>('/', getProducts);
 router.get('/search', searchProducts);
 router.get('/barcode/:barcode', searchByBarcode);
+router.post('/barcode/:barcode/lookup', lookupAndCreateFromBarcode);
 router.post<{}, Tables<'products'>[]>('/', createProduct);
 router.get<{ id: string }, Tables<'products'>>('/:id', getProduct);
 router.put<{ id: string }, Tables<'products'>>('/:id', updateProduct);

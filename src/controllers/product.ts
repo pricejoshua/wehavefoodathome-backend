@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import supabase from "../utils/supabase";
 import { Tables } from "../types/db.types";
+import { lookupBarcodeOpenFoodFacts } from "../utils/openFoodFacts";
 
 export const getProducts = async (req: Request, res: Response): Promise<Response>  => {
   const { data, error } = await supabase.from("products").select("*");
@@ -116,4 +117,77 @@ export const searchProducts = async (req: Request, res: Response): Promise<Respo
     }
 
     return res.status(200).json(data);
+};
+
+/**
+ * Lookup barcode in Open Food Facts and create product if it doesn't exist
+ * This endpoint will:
+ * 1. Check if product exists in our database
+ * 2. If not, look it up in Open Food Facts
+ * 3. If found, create it in our database
+ * 4. Return the product
+ */
+export const lookupAndCreateFromBarcode = async (req: Request, res: Response): Promise<Response> => {
+    const { barcode } = req.params;
+
+    if (!barcode) {
+        return res.status(400).json({ error: "Barcode is required" });
+    }
+
+    try {
+        // First, check if product already exists in our database
+        const { data: existingProduct } = await supabase
+            .from("products")
+            .select("*")
+            .contains("metadata", { barcode })
+            .limit(1)
+            .maybeSingle();
+
+        if (existingProduct) {
+            return res.status(200).json({
+                product: existingProduct,
+                source: "database",
+                created: false
+            });
+        }
+
+        // Product doesn't exist, look it up in Open Food Facts
+        const productInfo = await lookupBarcodeOpenFoodFacts(barcode);
+
+        if (!productInfo) {
+            return res.status(404).json({
+                error: "Product not found in Open Food Facts database",
+                barcode,
+                message: "You can manually create this product or it may not be in the database yet"
+            });
+        }
+
+        // Create the product in our database
+        const { data: newProduct, error: insertError } = await supabase
+            .from("products")
+            .insert({
+                name: productInfo.name,
+                description: productInfo.description,
+                metadata: productInfo.metadata
+            })
+            .select()
+            .single();
+
+        if (insertError) {
+            return res.status(500).json({ error: insertError.message });
+        }
+
+        return res.status(201).json({
+            product: newProduct,
+            source: "openfoodfacts",
+            created: true,
+            message: "Product automatically created from Open Food Facts"
+        });
+
+    } catch (error) {
+        console.error('Error in lookupAndCreateFromBarcode:', error);
+        return res.status(500).json({
+            error: "Internal server error while processing barcode lookup"
+        });
+    }
 };
