@@ -39,4 +39,4 @@ export function getAvailableProviders(): ReceiptParserProvider[] {
   return ReceiptParsingService.getAvailableProviders();
 }
 
-export default getRecieptData;
+export default getReceiptData;
