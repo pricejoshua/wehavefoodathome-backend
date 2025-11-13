@@ -46,3 +46,20 @@ npm run build
 - Set expiration dates when adding food items
 - Query items expiring within X days
 - Get alerts for food nearing expiration
+
+### `add_food_tags.sql`
+- Creates `food_tags` table for tagging food items as belonging to specific users
+- Creates `food_items_with_tags` view for querying tagged items
+- Adds indexes for efficient tag lookups
+
+**What it does:**
+- Tag food items for specific users ("John's milk")
+- Tag items as "for everyone" by setting user_id to NULL
+- Support for bulk tagging operations
+- View aggregates all tags for each food item
+
+**After running:** You'll be able to:
+- Tag food items: "This is mine" vs "This is for everyone"
+- Filter food list by tagged user
+- Bulk tag items from receipts
+- See who owns what food

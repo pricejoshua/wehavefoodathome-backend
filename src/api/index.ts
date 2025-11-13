@@ -3,7 +3,7 @@ import express from 'express';
 import MessageResponse from '../interfaces/MessageResponse';
 import emojis from './emojis';
 import receipts from './receipts';
-import upload from './upload-reciept';
+import upload from './upload-receipt';
 import products from './item';
 import foodItems from './food-items';
 import houses from './houses';
