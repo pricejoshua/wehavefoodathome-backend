@@ -1,6 +1,6 @@
 import { VeryfiDocument } from "@veryfi/veryfi-sdk/lib/types/VeryfiDocument";
 
-export type Reciept = {
+export type Receipt = {
     account_number:            null | string;
     cashback:                  null;
     category:                  string;
@@ -141,13 +141,13 @@ export type Vendor = {
     web:            null | string;
 }
 
-export function toReciept(json: string): Reciept {
+export function toReceipt(json: string): Receipt {
     console.log(json);
     console.log(typeof json);
     return JSON.parse(json);
 }
 
-export function parseRecieptData(data: VeryfiDocument): Reciept {
+export function parseReceiptData(data: VeryfiDocument): Receipt {
     return {
         account_number: null,
         cashback: null,

@@ -2,12 +2,15 @@ import express from "express";
 import multer from "multer";
 import supabase from "../utils/supabase";
 import { randomUUID } from "crypto";
-import exp from "constants";
+import { check_token } from '../middleware/auth';
+
 const router = express.Router();
 const upload = multer();
-const app = express();
 
-// curl -X POST -F "image=@/path/to/file" localhost:5000/upload
+// Apply authentication to upload
+router.use(check_token);
+
+// curl -X POST -F "image=@/path/to/file" localhost:5000/upload -H "Authorization: Bearer YOUR_TOKEN"
 router.post("/", upload.single("image"), async (req: express.Request, res:express.Response) => {
     console.log(req.file);
     if (!req.file) {
