@@ -12,10 +12,108 @@ export const getProducts = async (req: Request, res: Response): Promise<Response
 
 export const createProduct = async (req: Request, res: Response) => {
     const product = req.body as Tables<"products">;
-    const { data, error } = await supabase.from("products").insert(product);
+    const { data, error } = await supabase.from("products").insert(product).select();
     if (error) {
         return res.status(500).json({ error: error.message });
     }
-    return res.json(data);
+    return res.status(201).json(data);
 };
 
+export const getProduct = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+    const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+    if (error) {
+        if (error.code === 'PGRST116') {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        return res.status(500).json({ error: error.message });
+    }
+    return res.status(200).json(data);
+};
+
+export const updateProduct = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const { data, error } = await supabase
+        .from("products")
+        .update(updates)
+        .eq("id", id)
+        .select();
+
+    if (error) {
+        return res.status(500).json({ error: error.message });
+    }
+
+    if (!data || data.length === 0) {
+        return res.status(404).json({ error: "Product not found" });
+    }
+
+    return res.status(200).json(data[0]);
+};
+
+export const deleteProduct = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+
+    const { error } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(204).send();
+};
+
+// Search products by barcode (stored in metadata)
+export const searchByBarcode = async (req: Request, res: Response): Promise<Response> => {
+    const { barcode } = req.params;
+
+    if (!barcode) {
+        return res.status(400).json({ error: "Barcode is required" });
+    }
+
+    // Search for products where metadata contains the barcode
+    const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .contains("metadata", { barcode });
+
+    if (error) {
+        return res.status(500).json({ error: error.message });
+    }
+
+    if (!data || data.length === 0) {
+        return res.status(404).json({ error: "Product not found with this barcode" });
+    }
+
+    // Return the first matching product
+    return res.status(200).json(data[0]);
+};
+
+// Search products by name
+export const searchProducts = async (req: Request, res: Response): Promise<Response> => {
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string') {
+        return res.status(400).json({ error: "Query parameter is required" });
+    }
+
+    const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .ilike("name", `%${query}%`);
+
+    if (error) {
+        return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(200).json(data);
+};
