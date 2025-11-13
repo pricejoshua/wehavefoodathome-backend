@@ -124,11 +124,21 @@ export const searchProducts = async (req: Request, res: Response): Promise<Respo
  * This endpoint will:
  * 1. Check if product exists in our database
  * 2. If not, look it up in Open Food Facts
- * 3. If found, create it in our database
- * 4. Return the product
+ * 3. If found in Open Food Facts, create it in our database with that data
+ * 4. If NOT found in Open Food Facts AND manual data provided, create with manual data
+ * 5. Return the product
+ *
+ * Request body (optional - for manual product creation if not in Open Food Facts):
+ * {
+ *   "name": "Product Name",
+ *   "description": "Optional description",
+ *   "category": Optional category ID,
+ *   "metadata": { any additional metadata }
+ * }
  */
 export const lookupAndCreateFromBarcode = async (req: Request, res: Response): Promise<Response> => {
     const { barcode } = req.params;
+    const manualData = req.body; // Optional manual product data
 
     if (!barcode) {
         return res.status(400).json({ error: "Barcode is required" });
@@ -154,34 +164,66 @@ export const lookupAndCreateFromBarcode = async (req: Request, res: Response): P
         // Product doesn't exist, look it up in Open Food Facts
         const productInfo = await lookupBarcodeOpenFoodFacts(barcode);
 
-        if (!productInfo) {
-            return res.status(404).json({
-                error: "Product not found in Open Food Facts database",
-                barcode,
-                message: "You can manually create this product or it may not be in the database yet"
+        if (productInfo) {
+            // Found in Open Food Facts - create from API data
+            const { data: newProduct, error: insertError } = await supabase
+                .from("products")
+                .insert({
+                    name: productInfo.name,
+                    description: productInfo.description,
+                    metadata: productInfo.metadata
+                })
+                .select()
+                .single();
+
+            if (insertError) {
+                return res.status(500).json({ error: insertError.message });
+            }
+
+            return res.status(201).json({
+                product: newProduct,
+                source: "openfoodfacts",
+                created: true,
+                message: "Product automatically created from Open Food Facts"
             });
         }
 
-        // Create the product in our database
-        const { data: newProduct, error: insertError } = await supabase
+        // Not found in Open Food Facts - check if manual data provided
+        if (!manualData || !manualData.name) {
+            return res.status(404).json({
+                error: "Product not found in Open Food Facts database",
+                barcode,
+                message: "Please provide product details (name is required) to create this product manually"
+            });
+        }
+
+        // Create product with manual data
+        const productToInsert = {
+            name: manualData.name,
+            description: manualData.description || null,
+            category: manualData.category || null,
+            metadata: {
+                barcode,
+                ...(manualData.metadata || {}),
+                source: "manual"
+            }
+        };
+
+        const { data: manualProduct, error: manualInsertError } = await supabase
             .from("products")
-            .insert({
-                name: productInfo.name,
-                description: productInfo.description,
-                metadata: productInfo.metadata
-            })
+            .insert(productToInsert)
             .select()
             .single();
 
-        if (insertError) {
-            return res.status(500).json({ error: insertError.message });
+        if (manualInsertError) {
+            return res.status(500).json({ error: manualInsertError.message });
         }
 
         return res.status(201).json({
-            product: newProduct,
-            source: "openfoodfacts",
+            product: manualProduct,
+            source: "manual",
             created: true,
-            message: "Product automatically created from Open Food Facts"
+            message: "Product created manually with provided data"
         });
 
     } catch (error) {
