@@ -1,7 +1,7 @@
 import express from 'express';
 import getReceiptData, { getAvailableProviders } from '../external/receipt';
 import { ReceiptParserProvider } from '../types/ReceiptParser';
-import { Reciept } from '../types/Reciept';
+import { Receipt } from '../types/Receipt';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ interface ParseReceiptRequest {
 
 interface ParseReceiptResponse {
   success: boolean;
-  data?: Reciept;
+  data?: Receipt;
   error?: string;
   provider?: string;
 }

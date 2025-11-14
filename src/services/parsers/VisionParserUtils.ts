@@ -1,5 +1,5 @@
 import { VisionReceiptResponse } from '../../types/ReceiptParser';
-import { Reciept, LineItem, Type } from '../../types/Reciept';
+import { Receipt, LineItem, Type } from '../../types/Receipt';
 
 /**
  * Shared utilities for vision-based receipt parsers (Claude, Groq, etc.)
@@ -18,7 +18,7 @@ export function convertVisionResponseToReceipt(
   source: string,
   owner: string,
   ocrScore: number = 0.9
-): Reciept {
+): Receipt {
   const lineItems: LineItem[] = data.line_items.map((item, index) => ({
     date: null,
     description: item.description,

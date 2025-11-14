@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { IReceiptParser, VisionReceiptResponse } from '../../types/ReceiptParser';
-import { Reciept } from '../../types/Reciept';
+import { Receipt } from '../../types/Receipt';
 import axios from 'axios';
 import { convertVisionResponseToReceipt } from './VisionParserUtils';
 
@@ -23,7 +23,7 @@ export class ClaudeReceiptParser implements IReceiptParser {
   /**
    * Parse receipt using Claude Vision API
    */
-  async parseReceipt(imageUrl: string, mimeType: string = 'image/jpeg'): Promise<Reciept> {
+  async parseReceipt(imageUrl: string, mimeType: string = 'image/jpeg'): Promise<Receipt> {
     try {
       // Download image and convert to base64
       const imageBase64 = await this.downloadImageAsBase64(imageUrl);
@@ -105,7 +105,7 @@ Important:
 
       const visionResponse: VisionReceiptResponse = JSON.parse(jsonText);
 
-      // Convert to Reciept format using shared utility
+      // Convert to Receipt format using shared utility
       return convertVisionResponseToReceipt(visionResponse, 'claude-vision', 'claude', 0.95);
     } catch (error) {
       console.error('Error parsing receipt with Claude:', error);

@@ -2,7 +2,7 @@ import { IReceiptParser, ReceiptParserProvider } from '../types/ReceiptParser';
 import { ClaudeReceiptParser } from './parsers/ClaudeReceiptParser';
 import { GroqReceiptParser } from './parsers/GroqReceiptParser';
 import { VeryfiReceiptParser } from './parsers/VeryfiReceiptParser';
-import { Reciept } from '../types/Reciept';
+import { Receipt } from '../types/Receipt';
 
 /**
  * Unified receipt parsing service that supports multiple providers
@@ -87,7 +87,7 @@ export class ReceiptParsingService {
   /**
    * Parse a receipt image
    */
-  async parseReceipt(imageUrl: string, mimeType?: string): Promise<Reciept> {
+  async parseReceipt(imageUrl: string, mimeType?: string): Promise<Receipt> {
     console.log(`Parsing receipt with ${this.parser.getProviderName()}...`);
 
     try {

@@ -1,6 +1,6 @@
 import Groq from 'groq-sdk';
 import { IReceiptParser, VisionReceiptResponse } from '../../types/ReceiptParser';
-import { Reciept } from '../../types/Reciept';
+import { Receipt } from '../../types/Receipt';
 import axios from 'axios';
 import { convertVisionResponseToReceipt } from './VisionParserUtils';
 
@@ -23,7 +23,7 @@ export class GroqReceiptParser implements IReceiptParser {
   /**
    * Parse receipt using Groq Llama Vision API
    */
-  async parseReceipt(imageUrl: string, mimeType: string = 'image/jpeg'): Promise<Reciept> {
+  async parseReceipt(imageUrl: string, mimeType: string = 'image/jpeg'): Promise<Receipt> {
     try {
       // Groq supports direct image URLs, but we'll convert to base64 for consistency
       const imageBase64 = await this.downloadImageAsBase64(imageUrl);
@@ -105,7 +105,7 @@ Important:
 
       const visionResponse: VisionReceiptResponse = JSON.parse(jsonText);
 
-      // Convert to Reciept format using shared utility
+      // Convert to Receipt format using shared utility
       return convertVisionResponseToReceipt(visionResponse, 'groq-llama-vision', 'groq', 0.9);
     } catch (error) {
       console.error('Error parsing receipt with Groq:', error);

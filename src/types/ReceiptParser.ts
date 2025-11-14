@@ -1,4 +1,4 @@
-import { Reciept } from './Reciept';
+import { Receipt } from './Receipt';
 
 /**
  * Supported receipt parsing providers
@@ -28,7 +28,7 @@ export interface IReceiptParser {
    * @param mimeType - MIME type of the image (e.g., 'image/jpeg', 'image/png')
    * @returns Parsed receipt data
    */
-  parseReceipt(imageUrl: string, mimeType?: string): Promise<Reciept>;
+  parseReceipt(imageUrl: string, mimeType?: string): Promise<Receipt>;
 
   /**
    * Get the provider name

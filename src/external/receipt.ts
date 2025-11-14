@@ -1,4 +1,4 @@
-import { Reciept } from "../types/Reciept";
+import { Receipt } from "../types/Receipt";
 import { ReceiptParsingService } from "../services/ReceiptParsingService";
 import { ReceiptParserProvider } from "../types/ReceiptParser";
 
@@ -9,11 +9,11 @@ import { ReceiptParserProvider } from "../types/ReceiptParser";
  * @param provider - Optional: specify which parser to use (claude, groq, or veryfi)
  * @returns Parsed receipt data
  */
-async function getRecieptData(
+async function getReceiptData(
   imageUrl: string,
   mimeType: string = 'image/jpeg',
   provider?: ReceiptParserProvider
-): Promise<Reciept> {
+): Promise<Receipt> {
   try {
     // Create parsing service (will auto-detect provider if not specified)
     const parsingService = provider
