@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      # Add your environment variables here or use .env file
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_PROJECT_ID=${SUPABASE_PROJECT_ID}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - VERYFI_CLIENT_ID=${VERYFI_CLIENT_ID}
+      - VERYFI_CLIENT_SECRET=${VERYFI_CLIENT_SECRET}
+      - VERYFI_USERNAME=${VERYFI_USERNAME}
+      - VERYFI_API_KEY=${VERYFI_API_KEY}
+      - RECEIPT_PARSER_PROVIDER=${RECEIPT_PARSER_PROVIDER:-claude}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-3-5-sonnet-20241022}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.2-90b-vision-preview}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/api/v1', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+  # Development service (with hot reload)
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5001:5000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_PROJECT_ID=${SUPABASE_PROJECT_ID}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - VERYFI_CLIENT_ID=${VERYFI_CLIENT_ID}
+      - VERYFI_CLIENT_SECRET=${VERYFI_CLIENT_SECRET}
+      - VERYFI_USERNAME=${VERYFI_USERNAME}
+      - VERYFI_API_KEY=${VERYFI_API_KEY}
+      - RECEIPT_PARSER_PROVIDER=${RECEIPT_PARSER_PROVIDER:-claude}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-3-5-sonnet-20241022}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.2-90b-vision-preview}
+    restart: unless-stopped
+    profiles:
+      - dev

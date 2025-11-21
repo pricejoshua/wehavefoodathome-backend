@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: wehavefoodathome-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_PROJECT_ID
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: VERYFI_CLIENT_ID
+        sync: false
+      - key: VERYFI_CLIENT_SECRET
+        sync: false
+      - key: VERYFI_USERNAME
+        sync: false
+      - key: VERYFI_API_KEY
+        sync: false
+      - key: RECEIPT_PARSER_PROVIDER
+        value: claude
+      - key: CLAUDE_MODEL
+        value: claude-3-5-sonnet-20241022
+      - key: GROQ_MODEL
+        value: llama-3.2-90b-vision-preview

@@ -1,0 +1,45 @@
+# fly.toml app configuration file generated for wehavefoodathome-backend
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+
+app = "wehavefoodathome-backend"
+primary_region = "sea"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/api/v1"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
+
+# Set secrets using: fly secrets set KEY=VALUE
+# Required secrets:
+# - SUPABASE_URL
+# - SUPABASE_SERVICE_ROLE_KEY
+# - SUPABASE_PROJECT_ID
+# - ANTHROPIC_API_KEY (optional)
+# - GROQ_API_KEY (optional)
+# - VERYFI_CLIENT_ID (optional)
+# - VERYFI_CLIENT_SECRET (optional)
+# - VERYFI_USERNAME (optional)
+# - VERYFI_API_KEY (optional)
