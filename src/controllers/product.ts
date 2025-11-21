@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import supabase from "../utils/supabase";
-import { Tables } from "../types/db.types";
-import { lookupBarcodeOpenFoodFacts } from "../utils/openFoodFacts";
+import { Request, Response } from 'express';
+import supabase from '../utils/supabase';
+import { Tables } from '../types/db.types';
+import { lookupBarcodeOpenFoodFacts } from '../utils/openFoodFacts';
 
 export const getProducts = async (req: Request, res: Response): Promise<Response>  => {
-  const { data, error } = await supabase.from("products").select("*");
+  const { data, error } = await supabase.from('products').select('*');
   if (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -12,111 +12,111 @@ export const getProducts = async (req: Request, res: Response): Promise<Response
 };
 
 export const createProduct = async (req: Request, res: Response) => {
-    const product = req.body as Tables<"products">;
-    const { data, error } = await supabase.from("products").insert(product).select();
-    if (error) {
-        return res.status(500).json({ error: error.message });
-    }
-    return res.status(201).json(data);
+  const product = req.body as Tables<'products'>;
+  const { data, error } = await supabase.from('products').insert(product).select();
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+  return res.status(201).json(data);
 };
 
 export const getProduct = async (req: Request, res: Response): Promise<Response> => {
-    const { id } = req.params;
-    const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("id", id)
-        .single();
+  const { id } = req.params;
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single();
 
-    if (error) {
-        if (error.code === 'PGRST116') {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        return res.status(500).json({ error: error.message });
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return res.status(404).json({ error: 'Product not found' });
     }
-    return res.status(200).json(data);
+    return res.status(500).json({ error: error.message });
+  }
+  return res.status(200).json(data);
 };
 
 export const updateProduct = async (req: Request, res: Response): Promise<Response> => {
-    const { id } = req.params;
-    const updates = req.body;
+  const { id } = req.params;
+  const updates = req.body;
 
-    const { data, error } = await supabase
-        .from("products")
-        .update(updates)
-        .eq("id", id)
-        .select();
+  const { data, error } = await supabase
+    .from('products')
+    .update(updates)
+    .eq('id', id)
+    .select();
 
-    if (error) {
-        return res.status(500).json({ error: error.message });
-    }
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
 
-    if (!data || data.length === 0) {
-        return res.status(404).json({ error: "Product not found" });
-    }
+  if (!data || data.length === 0) {
+    return res.status(404).json({ error: 'Product not found' });
+  }
 
-    return res.status(200).json(data[0]);
+  return res.status(200).json(data[0]);
 };
 
 export const deleteProduct = async (req: Request, res: Response): Promise<Response> => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const { error } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", id);
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
 
-    if (error) {
-        return res.status(500).json({ error: error.message });
-    }
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
 
-    return res.status(204).send();
+  return res.status(204).send();
 };
 
 // Search products by barcode (stored in metadata)
 export const searchByBarcode = async (req: Request, res: Response): Promise<Response> => {
-    const { barcode } = req.params;
+  const { barcode } = req.params;
 
-    if (!barcode) {
-        return res.status(400).json({ error: "Barcode is required" });
-    }
+  if (!barcode) {
+    return res.status(400).json({ error: 'Barcode is required' });
+  }
 
-    // Search for products where metadata contains the barcode
-    const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .contains("metadata", { barcode });
+  // Search for products where metadata contains the barcode
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .contains('metadata', { barcode });
 
-    if (error) {
-        return res.status(500).json({ error: error.message });
-    }
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
 
-    if (!data || data.length === 0) {
-        return res.status(404).json({ error: "Product not found with this barcode" });
-    }
+  if (!data || data.length === 0) {
+    return res.status(404).json({ error: 'Product not found with this barcode' });
+  }
 
-    // Return the first matching product
-    return res.status(200).json(data[0]);
+  // Return the first matching product
+  return res.status(200).json(data[0]);
 };
 
 // Search products by name
 export const searchProducts = async (req: Request, res: Response): Promise<Response> => {
-    const { query } = req.query;
+  const { query } = req.query;
 
-    if (!query || typeof query !== 'string') {
-        return res.status(400).json({ error: "Query parameter is required" });
-    }
+  if (!query || typeof query !== 'string') {
+    return res.status(400).json({ error: 'Query parameter is required' });
+  }
 
-    const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .ilike("name", `%${query}%`);
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .ilike('name', `%${query}%`);
 
-    if (error) {
-        return res.status(500).json({ error: error.message });
-    }
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
 
-    return res.status(200).json(data);
+  return res.status(200).json(data);
 };
 
 /**
@@ -137,99 +137,99 @@ export const searchProducts = async (req: Request, res: Response): Promise<Respo
  * }
  */
 export const lookupAndCreateFromBarcode = async (req: Request, res: Response): Promise<Response> => {
-    const { barcode } = req.params;
-    const manualData = req.body; // Optional manual product data
+  const { barcode } = req.params;
+  const manualData = req.body; // Optional manual product data
 
-    if (!barcode) {
-        return res.status(400).json({ error: "Barcode is required" });
+  if (!barcode) {
+    return res.status(400).json({ error: 'Barcode is required' });
+  }
+
+  try {
+    // First, check if product already exists in our database
+    const { data: existingProduct } = await supabase
+      .from('products')
+      .select('*')
+      .contains('metadata', { barcode })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingProduct) {
+      return res.status(200).json({
+        product: existingProduct,
+        source: 'database',
+        created: false,
+      });
     }
 
-    try {
-        // First, check if product already exists in our database
-        const { data: existingProduct } = await supabase
-            .from("products")
-            .select("*")
-            .contains("metadata", { barcode })
-            .limit(1)
-            .maybeSingle();
+    // Product doesn't exist, look it up in Open Food Facts
+    const productInfo = await lookupBarcodeOpenFoodFacts(barcode);
 
-        if (existingProduct) {
-            return res.status(200).json({
-                product: existingProduct,
-                source: "database",
-                created: false
-            });
-        }
+    if (productInfo) {
+      // Found in Open Food Facts - create from API data
+      const { data: newProduct, error: insertError } = await supabase
+        .from('products')
+        .insert({
+          name: productInfo.name,
+          description: productInfo.description,
+          metadata: productInfo.metadata,
+        })
+        .select()
+        .single();
 
-        // Product doesn't exist, look it up in Open Food Facts
-        const productInfo = await lookupBarcodeOpenFoodFacts(barcode);
+      if (insertError) {
+        return res.status(500).json({ error: insertError.message });
+      }
 
-        if (productInfo) {
-            // Found in Open Food Facts - create from API data
-            const { data: newProduct, error: insertError } = await supabase
-                .from("products")
-                .insert({
-                    name: productInfo.name,
-                    description: productInfo.description,
-                    metadata: productInfo.metadata
-                })
-                .select()
-                .single();
-
-            if (insertError) {
-                return res.status(500).json({ error: insertError.message });
-            }
-
-            return res.status(201).json({
-                product: newProduct,
-                source: "openfoodfacts",
-                created: true,
-                message: "Product automatically created from Open Food Facts"
-            });
-        }
-
-        // Not found in Open Food Facts - check if manual data provided
-        if (!manualData || !manualData.name) {
-            return res.status(404).json({
-                error: "Product not found in Open Food Facts database",
-                barcode,
-                message: "Please provide product details (name is required) to create this product manually"
-            });
-        }
-
-        // Create product with manual data
-        const productToInsert = {
-            name: manualData.name,
-            description: manualData.description || null,
-            category: manualData.category || null,
-            metadata: {
-                barcode,
-                ...(manualData.metadata || {}),
-                source: "manual"
-            }
-        };
-
-        const { data: manualProduct, error: manualInsertError } = await supabase
-            .from("products")
-            .insert(productToInsert)
-            .select()
-            .single();
-
-        if (manualInsertError) {
-            return res.status(500).json({ error: manualInsertError.message });
-        }
-
-        return res.status(201).json({
-            product: manualProduct,
-            source: "manual",
-            created: true,
-            message: "Product created manually with provided data"
-        });
-
-    } catch (error) {
-        console.error('Error in lookupAndCreateFromBarcode:', error);
-        return res.status(500).json({
-            error: "Internal server error while processing barcode lookup"
-        });
+      return res.status(201).json({
+        product: newProduct,
+        source: 'openfoodfacts',
+        created: true,
+        message: 'Product automatically created from Open Food Facts',
+      });
     }
+
+    // Not found in Open Food Facts - check if manual data provided
+    if (!manualData || !manualData.name) {
+      return res.status(404).json({
+        error: 'Product not found in Open Food Facts database',
+        barcode,
+        message: 'Please provide product details (name is required) to create this product manually',
+      });
+    }
+
+    // Create product with manual data
+    const productToInsert = {
+      name: manualData.name,
+      description: manualData.description || null,
+      category: manualData.category || null,
+      metadata: {
+        barcode,
+        ...(manualData.metadata || {}),
+        source: 'manual',
+      },
+    };
+
+    const { data: manualProduct, error: manualInsertError } = await supabase
+      .from('products')
+      .insert(productToInsert)
+      .select()
+      .single();
+
+    if (manualInsertError) {
+      return res.status(500).json({ error: manualInsertError.message });
+    }
+
+    return res.status(201).json({
+      product: manualProduct,
+      source: 'manual',
+      created: true,
+      message: 'Product created manually with provided data',
+    });
+
+  } catch (error) {
+    console.error('Error in lookupAndCreateFromBarcode:', error);
+    return res.status(500).json({
+      error: 'Internal server error while processing barcode lookup',
+    });
+  }
 };

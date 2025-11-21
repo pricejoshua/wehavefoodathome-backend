@@ -1,25 +1,25 @@
 import express from 'express';
 import {
-    getFoodItems,
-    getFoodItem,
-    createFoodItem,
-    updateFoodItem,
-    deleteFoodItem,
-    searchFoodItems,
-    getExpiringItems,
-    bulkCreateFoodItems
+  getFoodItems,
+  getFoodItem,
+  createFoodItem,
+  updateFoodItem,
+  deleteFoodItem,
+  searchFoodItems,
+  getExpiringItems,
+  bulkCreateFoodItems,
 } from '../controllers/foodItem';
 import {
-    getFoodItemHistory,
-    getHouseActivity,
-    getHouseActivitySummary
+  getFoodItemHistory,
+  getHouseActivity,
+  getHouseActivitySummary,
 } from '../controllers/foodLog';
 import {
-    tagFoodItem,
-    untagFoodItem,
-    getFoodItemTags,
-    getTaggedFoodItems,
-    bulkTagFoodItems
+  tagFoodItem,
+  untagFoodItem,
+  getFoodItemTags,
+  getTaggedFoodItems,
+  bulkTagFoodItems,
 } from '../controllers/foodTag';
 import { check_token } from '../middleware/auth';
 
